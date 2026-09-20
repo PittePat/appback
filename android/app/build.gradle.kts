@@ -39,6 +39,16 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+
+            // Keep R8's default optimization/shrinking, but apply our keep rules so
+            // Shizuku can still instantiate ShizukuShellService by name (it uses
+            // reflection). Without these, R8 renames the class to e.g. "C.n" and
+            // Shizuku throws InstantiationException → the privileged service never
+            // starts → app list stays empty on release/APK builds.
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }
